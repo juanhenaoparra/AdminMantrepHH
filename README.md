@@ -1,2 +1,2 @@
 # AdminMantrepHH
-App desarrollada en Python 3.7.2 cuya función es manejar todo el proceso administrativo de la empresa MantrepHH
+App tipo CRUD desarrollada en Python 3.7.2 cuya función es manejar los clientes de la empresa MantrepHH
