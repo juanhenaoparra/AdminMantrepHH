@@ -28,6 +28,11 @@ def AbrirCotizacion(client_name):
 	db = TinyDB('db/db.json')
 	Cliente = Query()
 	queryClient = db.search(Cliente.Client == client_name)
+	RepCli = queryClient[0]['Name']
+	AddCli = queryClient[0]['Address']
+	CityCli = queryClient[0]['City']
+	PhoneCli = queryClient[0]['Phone']
+	EmailCli = queryClient[0]['Email']
 	Count = int(queryClient[0]['Count'])
 	nCot = ''
 
@@ -50,29 +55,12 @@ def AbrirCotizacion(client_name):
 	#b6 = sheet['B6'].value	#Numero de Cotización [Formato: C-00001]
 	sheet['B4'] = client_name
 	sheet['B6'] = nCot
+	sheet['B10'] = AddCli
+	sheet['B12'] = CityCli
+	sheet['B14'] = PhoneCli
+	sheet['B16'] = EmailCli
+	sheet['B18'] = RepCli
 	workbook.save(FILE_PATH)
 
 	comandoInicio = 'start ..//"%s"//%s.xlsx' % (client_name, nCot)
 	os.system(comandoInicio)
-
-# def ValidarNombreCliente(client_name):
-# 	db = TinyDB('db/db.json')
-# 	Cliente = Query()
-# 	clienteExistente = False
-
-# 	for item in db:
-# 		NombreCliente = item['NombreCliente']
-# 		if NombreCliente == client_name:
-# 			clienteExistente = True
-
-# 	if not clienteExistente:
-# 		print("Creando nuevo cliente...")
-# 		db.insert({'NombreCliente': client_name, 'Count': 1})
-# 		os.system('mkdir "..\\%s"' % client_name)
-# 		os.system('copy HojadeCotizacion.xlsx "..\\%s"' % client_name)
-# 		os.rename('..//'+client_name+'//HojadeCotizacion.xlsx', '..//'+client_name+'//C-00001.xlsx')
-
-# 	else:
-# 		queryClient = db.search(Cliente.NombreCliente == client_name)
-# 		print('Creando nueva cotizacion para '+queryClient[0]['NombreCliente'])
-# 		CrearCotizacion(client_name)
