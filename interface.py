@@ -12,7 +12,7 @@ class Cliente:
 
 		#Creating a Frame Container
 		frame = LabelFrame(self.wind, text ='Registrar Nuevo Cliente')
-		frame.grid(row = 0, column = 0, columnspan = 3)
+		frame.grid(row = 0, column = 0, columnspan = 4)
 
 		#Client Input
 		Label(frame, text='Cliente: ').grid(row = 1, column = 0, sticky = 'E')
@@ -61,20 +61,21 @@ class Cliente:
 
 		#Table
 		self.tree = ttk.Treeview(height = 10, columns = ('#0','#1','#2'))
-		self.tree.grid(row = 9, column = 0, columnspan = 3)
+		self.tree.grid(row = 9, column = 0, columnspan = 4)
 		self.tree.column('#0', width = 200)
-		self.tree.column('#1', width = 200)
+		self.tree.column('#1', width = 180)
 		self.tree.column('#2', width = 100)
-		self.tree.column('#3', width = 150)
+		self.tree.column('#3', width = 220)
 		self.tree.heading('#0', text = 'Nombre', anchor = CENTER)
 		self.tree.heading('#1', text = 'Representante', anchor = CENTER)
 		self.tree.heading('#2', text = 'Telefono', anchor = CENTER)
 		self.tree.heading('#3', text = 'Email', anchor = CENTER)
 
-		#Button Editar y Eliminar
+		#Button Editar, Eliminar, Nueva Cotización y Nueva Cuenta de Cobro
 		ttk.Button(text = 'EDITAR', command = self.editClient).grid(row = 8, column = 0, sticky = W + E)
 		ttk.Button(text = 'ELIMINAR', command = self.deleteClient).grid(row = 8, column = 1, sticky = W + E)
-		ttk.Button(text = 'NUEVA COTIZACION', command = self.createCot).grid(row = 8, column = 2, sticky = W + E, pady = 10)	
+		ttk.Button(text = 'NUEVA COTIZACION', command = lambda: self.createFile('c')).grid(row = 8, column = 2, sticky = W + E, pady = 10)
+		ttk.Button(text = 'NUEVA CUENTA DE COBRO', command = lambda: self.createFile('b')).grid(row = 8, column = 3, sticky = W + E, pady = 10)
 
 		#Llenando las filas de la tabla
 		self.getClients()
@@ -127,7 +128,7 @@ class Cliente:
 			client_name = client_name.upper() #Convierte el string en MAYUSCULAS
 
 			#Inserta los datos usando db.insert en el orden
-			db.insert({'Client': client_name, 'Count': 0, 'Name' : self.representative.get(), 'Address' : self.address.get(), 'City' : self.city.get(), 'Phone' : self.phone.get(), 'Email' : self.email.get()})
+			db.insert({'Client': client_name, 'CountCot': 0, 'CountCobro' : 0, 'Name' : self.representative.get(), 'Address' : self.address.get(), 'City' : self.city.get(), 'Phone' : self.phone.get(), 'Email' : self.email.get()})
 
 			#Genera un nuevo mensaje en ventana principal y lo oculta luego de 3500ms
 			self.message['fg'] = 'green'
@@ -135,7 +136,8 @@ class Cliente:
 			self.wind.after(3500, self.clearMsg) #Oculta el mensaje con el método clearMsg
 
 			#Crea carpeta que almacenara las cotizaciones
-			os.system('mkdir "..\\%s"' % client_name)
+			os.system('mkdir "..\\%s"\\COTIZACION' % client_name)
+			os.system('mkdir "..\\%s"\\COBRO' % client_name)
 
 			#Limpia el formulario 
 			self.client.delete(0, END)
@@ -261,8 +263,8 @@ class Cliente:
 		#Actualiza TreeView
 		self.getClients()
 
-	""" Método que verifica el elemento a usar para crear nueva cotizacion """
-	def createCot(self):
+	""" Método que verifica el elemento a usar para crear nuevo archivo """
+	def createFile(self, tipo):
 		#Conexión a BD
 		db = TinyDB('db/db.json')
 		Cliente = Query()
@@ -272,16 +274,16 @@ class Cliente:
 			self.tree.item(self.tree.selection())['text'][0]
 		except IndexError as e:
 			self.message['fg'] = 'red'
-			self.message['text'] = 'Para crear una cotizacion debes seleccionar un cliente'
+			self.message['text'] = 'Para crear un nuevo archivo debes seleccionar un cliente'
 			self.wind.after(2500, self.clearMsg)
 			return
 
 		name = self.tree.item(self.tree.selection())['text'] #Guarda el nombre del cliente seleccionado
-		main.CrearCotizacion(name) #Usa el modulo main para crear la cotización
+		main.CrearArchivo(name, tipo) #Usa el modulo main para crear el archivo
 
 		#Imprime mensaje de confirmación y lo oculta luego de 3500ms
 		self.message['fg'] = 'green'
-		self.message['text'] = 'Cotizacion creada existosamente para {}'.format(name)
+		self.message['text'] = 'Archivo creado existosamente para {}'.format(name)
 		self.wind.after(3500, self.clearMsg)
 
 if __name__ == '__main__':
