@@ -126,9 +126,15 @@ class Cliente:
 
 			client_name = self.client.get()
 			client_name = client_name.upper() #Convierte el string en MAYUSCULAS
+			client_rep = self.representative.get()
+			client_rep = client_rep.split(' ')
+			new_client_rep = ''
+
+			for palabra in client_rep:
+				new_client_rep += palabra.capitalize() + ' '
 
 			#Inserta los datos usando db.insert en el orden
-			db.insert({'Client': client_name, 'CountCot': 0, 'CountCobro' : 0, 'Name' : self.representative.get(), 'Address' : self.address.get(), 'City' : self.city.get(), 'Phone' : self.phone.get(), 'Email' : self.email.get()})
+			db.insert({'Client': client_name, 'CountCot': 0, 'CountCobro' : 0, 'Name' : new_client_rep, 'Address' : self.address.get(), 'City' : self.city.get(), 'Phone' : self.phone.get(), 'Email' : self.email.get()})
 
 			#Genera un nuevo mensaje en ventana principal y lo oculta luego de 3500ms
 			self.message['fg'] = 'green'
